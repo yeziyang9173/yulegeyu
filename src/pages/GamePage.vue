@@ -52,7 +52,8 @@
             }"
             @click="() => doClickBlock(block)"
           >
-            {{ block.type }}
+            <img v-if="isImageUrl(block.type)" :src="block.type" class="block-image" :alt="block.type" />
+            <span v-else>{{ block.type }}</span>
           </div>
         </div>
       </div>
@@ -70,7 +71,8 @@
           class="block"
           @click="() => doClickBlock(randomBlock[0], index)"
         >
-          {{ randomBlock[0].type }}
+          <img v-if="isImageUrl(randomBlock[0].type)" :src="randomBlock[0].type" class="block-image" :alt="randomBlock[0].type" />
+          <span v-else>{{ randomBlock[0].type }}</span>
         </div>
         <!-- 隐藏 -->
         <div
@@ -79,7 +81,8 @@
           class="block disabled"
         >
           <span v-if="canSeeRandom">
-            {{ randomBlock[num].type }}
+            <img v-if="isImageUrl(randomBlock[num].type)" :src="randomBlock[num].type" class="block-image" :alt="randomBlock[num].type" />
+            <span v-else>{{ randomBlock[num].type }}</span>
           </span>
         </div>
       </div>
@@ -87,7 +90,8 @@
     <!-- 槽位 -->
     <a-row v-if="slotAreaVal.length > 0" align="center" class="slot-board">
       <div v-for="(slotBlock, index) in slotAreaVal" :key="index" class="block">
-        {{ slotBlock?.type }}
+        <img v-if="slotBlock?.type && isImageUrl(slotBlock.type)" :src="slotBlock.type" class="block-image" :alt="slotBlock.type" />
+        <span v-else>{{ slotBlock?.type }}</span>
       </div>
     </a-row>
     <!-- 技能按钮组 -->
@@ -127,7 +131,6 @@
 import useGame from "../core/game";
 import { onMounted } from "vue";
 import { useRouter } from "vue-router";
-import MyAd from "../components/MyAd.vue";
 
 const router = useRouter();
 
@@ -151,6 +154,20 @@ const {
   doHolyLight,
   doSeeRandom,
 } = useGame();
+
+/**
+ * 判断是否为图片URL
+ */
+const isImageUrl = (str: string): boolean => {
+  if (!str) return false;
+  // 检查是否为URL格式
+  try {
+    new URL(str);
+    return true;
+  } catch {
+    return false;
+  }
+};
 
 /**
  * 回上一页
@@ -441,6 +458,13 @@ onMounted(() => {
 .block:hover {
   transform: scale(1.05);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+}
+
+.block-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .disabled {
